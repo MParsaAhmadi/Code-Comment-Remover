@@ -14,7 +14,9 @@
 
 <br>
 
-[**🚀 Live Demo**](https://mparsaahmadi.github.io/Code-Comment-Remover/)
+<a href="https://mparsaahmadi.github.io/Code-Comment-Remover/" target="_blank">
+  <img src="https://img.shields.io/badge/🚀%20Live%20Demo-Open%20App-4f46e5?style=for-the-badge&logo=githubpages&logoColor=white" />
+</a>
 
 <br>
 
