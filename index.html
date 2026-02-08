@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Comment Remover — Clean Your Code Instantly</title>
+    <meta name="description" content="A free online tool to remove comments from code in any language. Supports JavaScript, Python, C++, HTML, CSS, SQL and more. Clean your code instantly with interactive comment markers.">
+    <meta name="keywords" content="code comment remover, remove comments, clean code, code cleaner, JavaScript, Python, C++, HTML, CSS, SQL">
+    <meta name="author" content="MParsa Ahmadi">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mparsaahmadi.github.io/code-comment-remover/">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Code Comment Remover — Clean Your Code Instantly">
+    <meta property="og:description" content="A free online tool to strip comments from source code in any major programming language. Interactive markers let you toggle comments on and off.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mparsaahmadi.github.io/code-comment-remover/">
+    <meta property="og:site_name" content="Code Comment Remover">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Code Comment Remover — Clean Your Code Instantly">
+    <meta name="twitter:description" content="Strip comments from code in JS, Python, C++, HTML, CSS, SQL and more. Free, fast, and interactive.">
+
+    <!-- Google Fonts: JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== CSS Reset & Variables ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #0f1420;
+            --bg-panel: #111827;
+            --bg-editor: #0d1117;
+            --border-color: #1e293b;
+            --border-glow: #00f0ff;
+            --accent-cyan: #00f0ff;
+            --accent-magenta: #ff00e5;
+            --accent-purple: #a855f7;
+            --accent-green: #00ff88;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --marker-bg: #1e1b4b;
+            --marker-border: #6366f1;
+            --marker-hover: #312e81;
+            --scrollbar-track: #0f1420;
+            --scrollbar-thumb: #1e293b;
+            --scrollbar-hover: #334155;
+            --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        html { font-size: 16px; scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== Scrollbar Styling ===== */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+        * { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track); }
+
+        /* ===== Background Effects ===== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 20%, rgba(0,240,255,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 90% 80%, rgba(255,0,229,0.03) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 50% 50%, rgba(168,85,247,0.02) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== Header ===== */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(15,20,32,0.8);
+            backdrop-filter: blur(20px);
+            flex-shrink: 0;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(168,85,247,0.15));
+            border: 1px solid rgba(0,240,255,0.3);
+        }
+
+        .logo-icon svg { width: 20px; height: 20px; }
+
+        .logo-text h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        .stat-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* ===== Main Layout ===== */
+        main {
+            position: relative;
+            z-index: 5;
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            position: relative;
+        }
+
+        .panel:first-child {
+            border-right: 1px solid var(--border-color);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 1rem;
+            background: rgba(15,20,32,0.9);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .panel-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        .panel-title .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .panel-title .dot.input-dot {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 8px rgba(0,240,255,0.5);
+        }
+
+        .panel-title .dot.output-dot {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px rgba(0,255,136,0.5);
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: var(--font-sans);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: rgba(30,41,59,0.5);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: rgba(30,41,59,0.9);
+            color: var(--text-primary);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(0,240,255,0.15);
+        }
+
+        .btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+        .btn-success {
+            border-color: var(--accent-green) !important;
+            color: var(--accent-green) !important;
+            box-shadow: 0 0 12px rgba(0,255,136,0.15) !important;
+        }
+
+        .btn-group { display: flex; gap: 0.4rem; }
+
+        /* ===== Editor Areas ===== */
+        .editor-wrap {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .line-numbers {
+            flex-shrink: 0;
+            width: 48px;
+            padding: 1rem 0;
+            background: rgba(10,14,23,0.6);
+            border-right: 1px solid var(--border-color);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.65;
+            color: var(--text-muted);
+            text-align: right;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .line-numbers .ln {
+            padding-right: 12px;
+            display: block;
+        }
+
+        #input-editor {
+            flex: 1;
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-editor);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.65;
+            border: none;
+            outline: none;
+            resize: none;
+            tab-size: 4;
+            white-space: pre;
+            overflow: auto;
+        }
+
+        #input-editor::placeholder {
+            color: var(--text-muted);
+        }
+
+        .output-scroll {
+            flex: 1;
+            overflow: auto;
+            background: var(--bg-editor);
+        }
+
+        #output-display {
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.65;
+            white-space: pre;
+            color: var(--text-primary);
+            min-height: 100%;
+        }
+
+        /* ===== Divider ===== */
+        .divider {
+            width: 3px;
+            background: var(--border-color);
+            cursor: col-resize;
+            position: relative;
+            flex-shrink: 0;
+            z-index: 20;
+            transition: background 0.2s;
+        }
+
+        .divider:hover, .divider.active {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0,240,255,0.3);
+        }
+
+        /* ===== Comment Markers ===== */
+        .comment-marker {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 1px 6px;
+            background: var(--marker-bg);
+            border: 1px solid var(--marker-border);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: var(--accent-purple);
+            transition: all 0.2s ease;
+            vertical-align: baseline;
+            line-height: 1.4;
+            user-select: none;
+        }
+
+        .comment-marker:hover {
+            background: var(--marker-hover);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(99,102,241,0.3);
+        }
+
+        .comment-marker svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+
+        .comment-marker.expanded {
+            background: rgba(99,102,241,0.12);
+            border-color: var(--accent-magenta);
+            color: var(--accent-magenta);
+        }
+
+        .comment-text-restored {
+            color: #6b7280;
+            font-style: italic;
+            background: rgba(99,102,241,0.06);
+            border-radius: 3px;
+            padding: 0 4px;
+        }
+
+        /* ===== Placeholder ===== */
+        .placeholder-text {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+            padding: 0.6rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            background: rgba(15,20,32,0.8);
+            backdrop-filter: blur(20px);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--accent-magenta);
+            text-shadow: 0 0 12px rgba(255,0,229,0.4);
+        }
+
+        /* ===== Toast ===== */
+        .toast {
+            position: fixed;
+            bottom: 3.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(17,24,39,0.95);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: var(--font-sans);
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0,255,136,0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+            }
+
+            .panel:first-child {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .panel {
+                flex: 1;
+                min-height: 0;
+            }
+
+            .divider {
+                width: auto;
+                height: 3px;
+                cursor: row-resize;
+            }
+
+            .header-stats {
+                display: none;
+            }
+
+            .logo-text p { display: none; }
+
+            header { padding: 0.75rem 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .line-numbers { width: 36px; }
+            .line-numbers .ln { padding-right: 8px; font-size: 0.7rem; }
+            #input-editor, #output-display { font-size: 0.78rem; padding: 0.75rem; }
+            .btn span.btn-label { display: none; }
+        }
+
+        /* ===== Glow line on top ===== */
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), var(--accent-purple), var(--accent-magenta), transparent);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-section">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-cyan)">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                    <line x1="12" y1="2" x2="12" y2="22" opacity="0.3"></line>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <h1>Code Comment Remover</h1>
+                <p>Strip &middot; Clean &middot; Ship</p>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="stat-lines">0</div>
+                <div class="stat-label">Lines</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-comments">0</div>
+                <div class="stat-label">Comments</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="stat-removed">0%</div>
+                <div class="stat-label">Removed</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Editor -->
+    <main>
+        <!-- Input Panel -->
+        <div class="panel" id="input-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="dot input-dot"></span>
+                    Input
+                </div>
+                <div class="btn-group">
+                    <button class="btn" id="btn-paste" title="Paste from clipboard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                        <span class="btn-label">Paste</span>
+                    </button>
+                    <button class="btn" id="btn-clear" title="Clear input">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        <span class="btn-label">Clear</span>
+                    </button>
+                </div>
+            </div>
+            <div class="editor-wrap">
+                <div class="line-numbers" id="input-lines"><span class="ln">1</span></div>
+                <textarea id="input-editor" spellcheck="false" placeholder="Paste your code here...&#10;&#10;Supports: JavaScript, Python, C/C++, Java, HTML, CSS, SQL, Shell, Ruby, Go, Rust, PHP and more.&#10;&#10;Comments will be detected and replaced with interactive markers."></textarea>
+            </div>
+        </div>
+
+        <!-- Draggable Divider -->
+        <div class="divider" id="divider"></div>
+
+        <!-- Output Panel -->
+        <div class="panel" id="output-panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <span class="dot output-dot"></span>
+                    Output
+                </div>
+                <div class="btn-group">
+                    <button class="btn" id="btn-expand-all" title="Show all comments">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span class="btn-label">Show All</span>
+                    </button>
+                    <button class="btn" id="btn-collapse-all" title="Hide all comments">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path>
+                        </svg>
+                        <span class="btn-label">Hide All</span>
+                    </button>
+                    <button class="btn" id="btn-copy" title="Copy output">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span class="btn-label">Copy</span>
+                    </button>
+                </div>
+            </div>
+            <div class="editor-wrap">
+                <div class="line-numbers" id="output-lines"><span class="ln">1</span></div>
+                <div class="output-scroll" id="output-scroll">
+                    <div id="output-display"><span class="placeholder-text">Processed code will appear here...</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Footer -->
+    <footer>
+        Developed by <a href="https://github.com/MParsaAhmadi" target="_blank" rel="noopener noreferrer">MParsa Ahmadi</a>
+    </footer>
+
+    <script>
+        // ===== DOM References =====
+        const inputEditor = document.getElementById('input-editor');
+        const outputDisplay = document.getElementById('output-display');
+        const inputLinesEl = document.getElementById('input-lines');
+        const outputLinesEl = document.getElementById('output-lines');
+        const outputScroll = document.getElementById('output-scroll');
+        const btnPaste = document.getElementById('btn-paste');
+        const btnClear = document.getElementById('btn-clear');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnExpandAll = document.getElementById('btn-expand-all');
+        const btnCollapseAll = document.getElementById('btn-collapse-all');
+        const divider = document.getElementById('divider');
+        const inputPanel = document.getElementById('input-panel');
+        const outputPanel = document.getElementById('output-panel');
+        const toastEl = document.getElementById('toast');
+        const statLines = document.getElementById('stat-lines');
+        const statComments = document.getElementById('stat-comments');
+        const statRemoved = document.getElementById('stat-removed');
+
+        // ===== State =====
+        let commentCounter = 0;
+        let debounceTimer = null;
+        let allExpanded = false;
+
+        // ===== Toast =====
+        function showToast(msg) {
+            toastEl.textContent = msg;
+            toastEl.classList.add('show');
+            setTimeout(() => toastEl.classList.remove('show'), 2000);
+        }
+
+        // ===== Line Numbers =====
+        function updateLineNumbers(text, container) {
+            const count = text ? text.split('\n').length : 1;
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                html += `<span class="ln">${i}</span>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // ===== Scroll Sync =====
+        inputEditor.addEventListener('scroll', () => {
+            inputLinesEl.scrollTop = inputEditor.scrollTop;
+        });
+
+        outputScroll.addEventListener('scroll', () => {
+            outputLinesEl.scrollTop = outputScroll.scrollTop;
+        });
+
+        // ===== Comment Detection & Removal Engine =====
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /**
+         * Processes the raw code string and returns an HTML string with comment
+         * markers.  Operates character-by-character for correctness, handling:
+         *   - String literals (single, double, backtick / template)
+         *   - Single-line comments:  //  #  --
+         *   - Multi-line comments:   /* ... * /   <!-- ... -->
+         *   - Regex literals in JS (basic heuristic)
+         *
+         * The algorithm is intentionally kept as a single-pass state machine so
+         * it can handle very long files without creating enormous intermediate
+         * arrays.
+         */
+        function processCode(code) {
+            if (!code.trim()) return { html: '<span class="placeholder-text">Processed code will appear here...</span>', commentCount: 0 };
+
+            const len = code.length;
+            let result = '';
+            let i = 0;
+            let commentCount = 0;
+
+            const markerSvgCollapsed = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+            const markerSvgExpanded = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+            function makeMarker(commentText) {
+                const id = 'cm-' + (commentCounter++);
+                const escaped = escapeHtml(commentText);
+                return `<span class="comment-marker" data-comment="${escaped}" data-id="${id}" onclick="toggleComment(this)" title="Click to show/hide comment">${markerSvgCollapsed}<span class="marker-label">...</span></span>`;
+            }
+
+            // Determine if char at pos is preceded by even number of backslashes (not escaped)
+            function isEscaped(pos) {
+                let bs = 0;
+                let p = pos - 1;
+                while (p >= 0 && code[p] === '\\') { bs++; p--; }
+                return bs % 2 === 1;
+            }
+
+            while (i < len) {
+                const ch = code[i];
+                const ch2 = i + 1 < len ? code[i + 1] : '';
+                const twoChar = ch + ch2;
+
+                // ---- String literals ----
+                if (ch === '"' || ch === "'" || ch === '`') {
+                    const quote = ch;
+                    let j = i + 1;
+                    result += escapeHtml(ch);
+                    while (j < len) {
+                        if (code[j] === quote && !isEscaped(j)) {
+                            result += escapeHtml(code.substring(i + 1, j + 1));
+                            i = j + 1;
+                            break;
+                        }
+                        if (quote !== '`' && code[j] === '\n') {
+                            // Unterminated string — just bail
+                            result += escapeHtml(code.substring(i + 1, j));
+                            i = j;
+                            break;
+                        }
+                        j++;
+                    }
+                    if (j >= len) {
+                        result += escapeHtml(code.substring(i + 1));
+                        i = len;
+                    }
+                    continue;
+                }
+
+                // ---- HTML comments <!-- --> ----
+                if (code.substring(i, i + 4) === '<!--') {
+                    const end = code.indexOf('-->', i + 4);
+                    if (end !== -1) {
+                        const commentBody = code.substring(i, end + 3);
+                        // Multi-line HTML comments: we need to split on newlines
+                        if (commentBody.includes('\n')) {
+                            const lines = commentBody.split('\n');
+                            commentCount++;
+                            result += makeMarker(lines[0]);
+                            for (let li = 1; li < lines.length; li++) {
+                                result += '\n';
+                                // these continuation lines become part of the hidden comment,
+                                // but we need line counts to match, so place empty lines
+                            }
+                        } else {
+                            commentCount++;
+                            result += makeMarker(commentBody);
+                        }
+                        i = end + 3;
+                    } else {
+                        // No closing tag — treat rest as comment
+                        const commentBody = code.substring(i);
+                        const lines = commentBody.split('\n');
+                        commentCount++;
+                        result += makeMarker(lines[0]);
+                        for (let li = 1; li < lines.length; li++) {
+                            result += '\n';
+                        }
+                        i = len;
+                    }
+                    continue;
+                }
+
+                // ---- Block comments /* */ ----
+                if (twoChar === '/*') {
+                    const end = code.indexOf('*/', i + 2);
+                    if (end !== -1) {
+                        const commentBody = code.substring(i, end + 2);
+                        if (commentBody.includes('\n')) {
+                            const lines = commentBody.split('\n');
+                            commentCount++;
+                            result += makeMarker(commentBody);
+                            for (let li = 1; li < lines.length; li++) {
+                                result += '\n';
+                            }
+                        } else {
+                            commentCount++;
+                            result += makeMarker(commentBody);
+                        }
+                        i = end + 2;
+                    } else {
+                        const commentBody = code.substring(i);
+                        const lines = commentBody.split('\n');
+                        commentCount++;
+                        result += makeMarker(commentBody);
+                        for (let li = 1; li < lines.length; li++) {
+                            result += '\n';
+                        }
+                        i = len;
+                    }
+                    continue;
+                }
+
+                // ---- Single-line // ----
+                if (twoChar === '//') {
+                    let j = i;
+                    while (j < len && code[j] !== '\n') j++;
+                    const commentBody = code.substring(i, j);
+                    commentCount++;
+                    result += makeMarker(commentBody);
+                    i = j; // \n will be handled next iteration
+                    continue;
+                }
+
+                // ---- Single-line # (Python, Shell, Ruby, etc.) ----
+                // Heuristic: # as comment when it's the first non-whitespace or preceded by whitespace
+                if (ch === '#') {
+                    // Check if likely a comment (not inside something weird)
+                    // Look back: should be start of line or preceded by space/tab/;
+                    let isComment = false;
+                    if (i === 0) {
+                        isComment = true;
+                    } else {
+                        const prevChar = code[i - 1];
+                        if (prevChar === '\n' || prevChar === ' ' || prevChar === '\t' || prevChar === ';' || prevChar === ')' || prevChar === '}') {
+                            isComment = true;
+                        }
+                        // Also check if line starts with whitespace then #
+                        let lineStart = i - 1;
+                        while (lineStart > 0 && code[lineStart - 1] !== '\n') lineStart--;
+                        const linePrefix = code.substring(lineStart, i).trim();
+                        if (linePrefix === '' || linePrefix.endsWith(';') || linePrefix.endsWith(')') || linePrefix.endsWith('}') || linePrefix.endsWith('{') || linePrefix.endsWith(':')) {
+                            isComment = true;
+                        }
+                    }
+
+                    if (isComment) {
+                        let j = i;
+                        while (j < len && code[j] !== '\n') j++;
+                        const commentBody = code.substring(i, j);
+                        commentCount++;
+                        result += makeMarker(commentBody);
+                        i = j;
+                        continue;
+                    }
+                }
+
+                // ---- SQL-style -- comments ----
+                if (twoChar === '--') {
+                    // Make sure it's not inside a decrement or arrow
+                    // Heuristic: -- followed by space or end of line or start of comment text
+                    const nextCh = i + 2 < len ? code[i + 2] : '\n';
+                    if (nextCh === ' ' || nextCh === '\t' || nextCh === '\n' || nextCh === '-' || i + 2 >= len) {
+                        let j = i;
+                        while (j < len && code[j] !== '\n') j++;
+                        const commentBody = code.substring(i, j);
+                        commentCount++;
+                        result += makeMarker(commentBody);
+                        i = j;
+                        continue;
+                    }
+                }
+
+                // ---- Normal character ----
+                result += escapeHtml(ch);
+                i++;
+            }
+
+            return { html: result, commentCount };
+        }
+
+        // ===== Toggle Comment =====
+        window.toggleComment = function(marker) {
+            const comment = marker.getAttribute('data-comment');
+            const isExpanded = marker.classList.contains('expanded');
+
+            if (isExpanded) {
+                // Collapse: remove the restored text
+                const restoredSpan = marker.nextElementSibling;
+                if (restoredSpan && restoredSpan.classList.contains('comment-text-restored')) {
+                    restoredSpan.remove();
+                }
+                marker.classList.remove('expanded');
+                marker.querySelector('.marker-label').textContent = '...';
+                marker.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><span class="marker-label">...</span>`;
+            } else {
+                // Expand: show the comment text
+                marker.classList.add('expanded');
+                marker.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg><span class="marker-label">hide</span>`;
+                const restoredSpan = document.createElement('span');
+                restoredSpan.className = 'comment-text-restored';
+                restoredSpan.textContent = comment;
+                marker.after(restoredSpan);
+            }
+        };
+
+        // ===== Copy Output =====
+        function getCopyText() {
+            // Walk through output nodes. For markers: if expanded, include the comment text;
+            // if collapsed, include nothing. For text nodes, include text.
+            const output = outputDisplay;
+            let text = '';
+
+            function walk(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    text += node.textContent;
+                    return;
+                }
+                if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+                if (node.classList && node.classList.contains('comment-marker')) {
+                    // collapsed = skip, expanded = skip (the restored span handles it)
+                    return;
+                }
+                if (node.classList && node.classList.contains('comment-text-restored')) {
+                    text += node.textContent;
+                    return;
+                }
+                if (node.classList && node.classList.contains('placeholder-text')) {
+                    return;
+                }
+                for (const child of node.childNodes) {
+                    walk(child);
+                }
+            }
+
+            walk(output);
+            return text;
+        }
+
+        // ===== Process & Render =====
+        function processAndRender() {
+            const code = inputEditor.value;
+
+            // Line numbers
+            updateLineNumbers(code, inputLinesEl);
+
+            if (!code.trim()) {
+                outputDisplay.innerHTML = '<span class="placeholder-text">Processed code will appear here...</span>';
+                updateLineNumbers('', outputLinesEl);
+                statLines.textContent = '0';
+                statComments.textContent = '0';
+                statRemoved.textContent = '0%';
+                return;
+            }
+
+            commentCounter = 0;
+            const { html, commentCount } = processCode(code);
+            outputDisplay.innerHTML = html;
+
+            // Output line numbers
+            const outputText = outputDisplay.textContent;
+            updateLineNumbers(outputText || code, outputLinesEl);
+
+            // Stats
+            const lineCount = code.split('\n').length;
+            statLines.textContent = lineCount;
+            statComments.textContent = commentCount;
+
+            if (code.length > 0) {
+                // Rough estimate of how much was comments
+                const cleanText = getCopyText();
+                const removedChars = code.length - cleanText.length;
+                const pct = Math.max(0, Math.round((removedChars / code.length) * 100));
+                statRemoved.textContent = pct + '%';
+            } else {
+                statRemoved.textContent = '0%';
+            }
+        }
+
+        // ===== Debounced Input Handler =====
+        inputEditor.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(processAndRender, 120);
+        });
+
+        // Handle tab key in editor
+        inputEditor.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = inputEditor.selectionStart;
+                const end = inputEditor.selectionEnd;
+                const value = inputEditor.value;
+                inputEditor.value = value.substring(0, start) + '    ' + value.substring(end);
+                inputEditor.selectionStart = inputEditor.selectionEnd = start + 4;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(processAndRender, 120);
+            }
+        });
+
+        // ===== Paste Button =====
+        btnPaste.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputEditor.value = text;
+                processAndRender();
+                showToast('✓ Pasted from clipboard');
+            } catch (err) {
+                // Fallback: focus the editor
+                inputEditor.focus();
+                showToast('Use Ctrl+V to paste');
+            }
+        });
+
+        // ===== Clear Button =====
+        btnClear.addEventListener('click', () => {
+            inputEditor.value = '';
+            processAndRender();
+            inputEditor.focus();
+            showToast('✓ Cleared');
+        });
+
+        // ===== Copy Button =====
+        btnCopy.addEventListener('click', async () => {
+            const text = getCopyText();
+            if (!text.trim()) {
+                showToast('Nothing to copy');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(text);
+                btnCopy.classList.add('btn-success');
+                showToast('✓ Copied to clipboard');
+                setTimeout(() => btnCopy.classList.remove('btn-success'), 2000);
+            } catch (err) {
+                showToast('Failed to copy');
+            }
+        });
+
+        // ===== Expand/Collapse All =====
+        btnExpandAll.addEventListener('click', () => {
+            const markers = outputDisplay.querySelectorAll('.comment-marker:not(.expanded)');
+            markers.forEach(m => toggleComment(m));
+            showToast(`✓ Showing ${markers.length} comment(s)`);
+        });
+
+        btnCollapseAll.addEventListener('click', () => {
+            const markers = outputDisplay.querySelectorAll('.comment-marker.expanded');
+            markers.forEach(m => toggleComment(m));
+            showToast(`✓ Hidden ${markers.length} comment(s)`);
+        });
+
+        // ===== Resizable Divider =====
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            divider.classList.add('active');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const mainEl = document.querySelector('main');
+            const rect = mainEl.getBoundingClientRect();
+
+            if (window.innerWidth > 768) {
+                const x = e.clientX - rect.left;
+                const pct = (x / rect.width) * 100;
+                const clamped = Math.max(20, Math.min(80, pct));
+                inputPanel.style.flex = 'none';
+                inputPanel.style.width = clamped + '%';
+                outputPanel.style.flex = '1';
+            } else {
+                const y = e.clientY - rect.top;
+                const pct = (y / rect.height) * 100;
+                const clamped = Math.max(20, Math.min(80, pct));
+                inputPanel.style.flex = 'none';
+                inputPanel.style.height = clamped + '%';
+                outputPanel.style.flex = '1';
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                divider.classList.remove('active');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            }
+        });
+
+        // Touch support for divider
+        divider.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            divider.classList.add('active');
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            const mainEl = document.querySelector('main');
+            const rect = mainEl.getBoundingClientRect();
+
+            if (window.innerWidth > 768) {
+                const x = touch.clientX - rect.left;
+                const pct = (x / rect.width) * 100;
+                const clamped = Math.max(20, Math.min(80, pct));
+                inputPanel.style.flex = 'none';
+                inputPanel.style.width = clamped + '%';
+                outputPanel.style.flex = '1';
+            } else {
+                const y = touch.clientY - rect.top;
+                const pct = (y / rect.height) * 100;
+                const clamped = Math.max(20, Math.min(80, pct));
+                inputPanel.style.flex = 'none';
+                inputPanel.style.height = clamped + '%';
+                outputPanel.style.flex = '1';
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                isDragging = false;
+                divider.classList.remove('active');
+            }
+        });
+
+        // ===== Init =====
+        updateLineNumbers('', inputLinesEl);
+        updateLineNumbers('', outputLinesEl);
+    </script>
+</body>
+</html>
