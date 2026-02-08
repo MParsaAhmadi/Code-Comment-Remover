@@ -15,7 +15,7 @@
 
 <br>
 
-[**🚀 Live Demo**](https://mparsaahmadi.github.io/code-comment-remover/)
+[**🚀 Live Demo**](https://mparsaahmadi.github.io/Code-Comment-Remover/)
 
 <br>
 
@@ -71,7 +71,7 @@ This project is intentionally dependency-free for maximum portability and perfor
 ### Live
 
 Visit the deployed app at:\
-👉 **[mparsaahmadi.github.io/code-comment-remover](https://mparsaahmadi.github.io/code-comment-remover/)**
+👉 **[mparsaahmadi.github.io/Code-Comment-Remover](https://mparsaahmadi.github.io/Code-Comment-Remover/)**
 
 ### Local
 
@@ -149,8 +149,6 @@ That's it. There's nothing to install, no `npm install`, no build step.
 ---
 
 ## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 You are free to use, modify, and distribute this project for any purpose.
 
