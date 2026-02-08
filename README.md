@@ -4,7 +4,6 @@
 
 **Strip comments from your code instantly — with the power to bring them back.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-00f0ff.svg?style=for-the-badge&labelColor=0a0e17)](LICENSE)
 [![Built With](https://img.shields.io/badge/Built_With-HTML%20%7C%20CSS%20%7C%20JS-a855f7.svg?style=for-the-badge&labelColor=0a0e17)](https://developer.mozilla.org/en-US/docs/Web)
 [![Deployed On](https://img.shields.io/badge/Deployed_On-GitHub_Pages-00ff88.svg?style=for-the-badge&logo=githubpages&logoColor=white&labelColor=0a0e17)](https://mparsaahmadi.github.io/code-comment-remover/)
 [![AI Assisted](https://img.shields.io/badge/AI_Assisted-Claude_by_Anthropic-ff00e5.svg?style=for-the-badge&logo=anthropic&logoColor=white&labelColor=0a0e17)](https://www.anthropic.com/)
